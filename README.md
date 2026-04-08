@@ -12,6 +12,52 @@ Customer churn is a critical business metric in the telecom industry. This proje
 
 ---
 
+## Business Value
+
+### What business questions does this solve?
+
+| Business Question | How This Model Answers It |
+|---|---|
+| Which customers are likely to leave next month? | Outputs a churn probability score (0–100%) for every customer |
+| Who should the retention team call first? | Rank customers by risk score → prioritise top-N for outreach |
+| What is driving customers to leave? | Feature importance reveals top churn signals (e.g. contract type, tenure, monthly charges) |
+| Is our retention campaign reaching the right people? | Compare predicted vs actual churn on a held-out set to validate targeting |
+
+---
+
+### How much can this save?
+
+The telecom industry rule of thumb: **acquiring a new customer costs 5–25× more than retaining an existing one.**
+
+Using the IBM Telco dataset as a reference point (7,043 customers, ~27% churn rate):
+
+| Scenario | Without Model | With Model | Savings |
+|---|---|---|---|
+| **Retention campaign cost** | Blast all 7,043 customers @ ~$30/contact = **$211K** | Target top 700 high-risk customers @ ~$30/contact = **$21K** | ~**$190K saved** per campaign cycle |
+| **Revenue at risk** | ~1,900 churners × $65/mo avg spend = **$1.5M/yr** | Prevent 15–20% churn with proactive retention = **$225K–$300K recovered** | Up to **$300K/yr in retained revenue** |
+| **Analyst time** | Manually reviewing accounts: ~2–3 hrs/analyst/day | Automated daily risk scoring pipeline: **< 5 min** | Frees ~**10+ analyst-hours/week** |
+
+> These are illustrative estimates based on industry benchmarks and dataset statistics. Actual impact scales with your customer base size and retention campaign conversion rate.
+
+---
+
+### Real-world workflow enabled
+
+```
+Daily batch scoring
+        │
+        ▼
+ Risk score per customer
+        │
+        ├── Score > 0.7  →  Flag for urgent retention call
+        ├── Score 0.4–0.7 →  Add to nurture email campaign
+        └── Score < 0.4  →  No action needed (save cost)
+```
+
+This means retention teams stop guessing and start acting on data — **spending budget only where it matters most.**
+
+---
+
 ## Results
 
 | Metric | Score |
