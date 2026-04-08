@@ -13,9 +13,7 @@ services:
     command: ["python", "app-ml/entrypoint/train.py"]
     restart: "no"
     volumes:
-      - ./data:/app/data        # Training data
-      - ./config:/app/config    # Pipeline config
-      - ./models:/app/models    # Trained model output
+      - models_volume:/app/models   # Named volume: lives inside Docker VM (no macOS I/O issues)
 
   # ===========================================================================
   # UI SERVICE
@@ -25,19 +23,17 @@ services:
     build:
       context: .
       dockerfile: app-ui/Dockerfile
-    command: >
-      sh -c "until [ -f /app/models/prod/latest_model.cbm ];
-             do echo 'Waiting for model...'; sleep 5; done
-             && gunicorn --chdir /app/app-ui app:server
-                --bind 0.0.0.0:8050 --workers 1 --timeout 120"
+    command: ["sh", "-c", "until [ -f /app/models/prod/latest_model.cbm ]; do echo 'Waiting for model...'; sleep 5; done && gunicorn --chdir /app/app-ui app:server --bind 0.0.0.0:8050 --workers 1 --timeout 120"]
     ports:
       - "8050:8050"
     volumes:
-      - ./data:/app/data
-      - ./config:/app/config
-      - ./models:/app/models
+      - models_volume:/app/models   # Same named volume — reads the model trained above
     depends_on:
       - app-ml-train
+
+# Named volume: stored inside Docker's Linux VM, avoids macOS VirtioFS bind mount issues
+volumes:
+  models_volume:
 
 # ===========================================================================
 # USAGE
@@ -53,4 +49,7 @@ services:
 #
 # Stop all:
 #   docker-compose down
+#
+# Remove named volume (force retrain next time):
+#   docker-compose down -v
 # ===========================================================================

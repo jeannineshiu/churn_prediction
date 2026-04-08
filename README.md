@@ -125,6 +125,46 @@ Open `http://localhost:8050` in your browser.
 
 ---
 
+## Docker Architecture
+
+### Why Docker?
+
+In production ML systems, a common failure mode is the **"works on my machine" problem** — a model trained in one environment behaves differently when deployed in another due to differences in Python versions, package versions, or OS-level libraries. Docker solves this by packaging the entire runtime environment (code, dependencies, OS libraries) into a portable image that runs identically everywhere.
+
+Beyond reproducibility, Docker enables **separation of concerns**: the training job and the serving application have different dependency footprints and different lifecycles. By running them as independent containers, we can:
+
+- Scale or redeploy the UI without retraining
+- Retrain the model without touching the serving layer
+- Run the training job on a different machine (e.g., a GPU server) and ship only the model artifact to the serving layer
+
+### Service Design
+
+This project uses two containers orchestrated with Docker Compose:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      docker-compose up                       │
+│                                                             │
+│  ┌─────────────────┐        named volume        ┌────────────────────┐  │
+│  │  app-ml-train   │  ──── models_volume ────▶  │     app-ui         │  │
+│  │                 │      (latest_model.cbm)     │                    │  │
+│  │  - Preprocess   │                             │  - Loads model     │  │
+│  │  - Optuna tune  │                             │  - Serves Dash app │  │
+│  │  - Train model  │                             │  - Port 8050       │  │
+│  │  → exits        │                             │                    │  │
+│  └─────────────────┘                             └────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+| Design Decision | Rationale |
+|---|---|
+| Two separate images | Training needs `optuna`/`catboost`; UI needs `dash`/`plotly`. Separate images keep each lean and independently deployable. |
+| Named Docker volume for models | Model artifacts are written by the training container and read by the UI. A named volume lives inside Docker's Linux VM filesystem, avoiding macOS/Windows host filesystem I/O issues. |
+| Static files (data, config) baked into image | Config and training data are versioned with the code. Baking them into the image makes each image fully self-contained and traceable to a specific git commit. |
+| UI waits for model file | `app-ui` polls for `latest_model.cbm` before starting gunicorn, creating a lightweight dependency without requiring a separate health-check service. |
+
+---
+
 ## Quickstart
 
 ### Option A — Docker (recommended)
@@ -140,16 +180,6 @@ docker-compose up --build
 
 Then open `http://localhost:8050` in your browser.
 
-**What happens under the hood:**
-
-```
-docker-compose up --build
-        │
-        ├── app-ml-train  →  trains model, saves to ./models/ (then exits)
-        │
-        └── app-ui        →  waits for model, then serves Dash app on :8050
-```
-
 Other useful commands:
 
 ```bash
@@ -159,8 +189,11 @@ docker-compose run app-ml-train
 # Start UI only (model already trained)
 docker-compose up app-ui
 
-# Stop everything
+# Stop and remove containers
 docker-compose down
+
+# Stop and remove containers + delete trained model volume (force retrain)
+docker-compose down -v
 ```
 
 ---

@@ -19,8 +19,10 @@ RUN pip install --no-cache-dir -r app-ui/requirements.txt
 COPY app-ui/ ./app-ui/
 COPY app-ml/src/ ./app-ml/src/
 COPY common/ ./common/
+COPY config/ ./config/
+COPY data/ ./data/
 
-# config/, data/, models/ are mounted as volumes at runtime
+# models/ is a named Docker volume shared with app-ml-train
 
 ENV PYTHONPATH="/app:/app/app-ml/src"
 

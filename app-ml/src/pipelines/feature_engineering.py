@@ -29,12 +29,9 @@ class FeatureEngineeringPipeline:
         Returns:
             pd.DataFrame: DataFrame with all object columns label-encoded.
         """
-        def _encode(col: pd.Series) -> pd.Series:
-            if col.dtype == 'object':
-                return pd.Series(LabelEncoder().fit_transform(col), index=col.index)
-            return col
-
-        return df.apply(_encode)
+        for col in df.select_dtypes(include='object').columns:
+            df[col] = LabelEncoder().fit_transform(df[col])
+        return df
 
     def run(self, df: pd.DataFrame) -> pd.DataFrame:
         """
