@@ -127,6 +127,46 @@ Open `http://localhost:8050` in your browser.
 
 ## Quickstart
 
+### Option A — Docker (recommended)
+
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+```bash
+git clone https://github.com/jeannineshiu/churn_prediction.git
+cd churn_prediction
+
+docker-compose up --build
+```
+
+Then open `http://localhost:8050` in your browser.
+
+**What happens under the hood:**
+
+```
+docker-compose up --build
+        │
+        ├── app-ml-train  →  trains model, saves to ./models/ (then exits)
+        │
+        └── app-ui        →  waits for model, then serves Dash app on :8050
+```
+
+Other useful commands:
+
+```bash
+# Train only (no UI)
+docker-compose run app-ml-train
+
+# Start UI only (model already trained)
+docker-compose up app-ui
+
+# Stop everything
+docker-compose down
+```
+
+---
+
+### Option B — Local (conda)
+
 ### 1. Clone the repository
 
 ```bash
@@ -145,6 +185,7 @@ conda activate churn-prediction
 
 ```bash
 pip install -r requirements.txt
+pip install -r app-ui/requirements.txt
 ```
 
 ### 4. Train the model
@@ -158,17 +199,21 @@ This will:
 - Train the final model on the full training set
 - Save the model to `models/prod/latest_model.cbm`
 
-### 5. Run inference
+### 5. Run inference (optional)
 
 ```bash
 python app-ml/entrypoint/inference.py
 ```
 
-This will:
-- Load the trained model
-- Run predictions on the test set
-- Print the classification report
-- Save a confusion matrix to `inference_results.png`
+Prints the classification report and saves a confusion matrix to `inference_results.png`.
+
+### 6. Launch the UI
+
+```bash
+python app-ui/app.py
+```
+
+Open `http://localhost:8050` in your browser.
 
 ---
 

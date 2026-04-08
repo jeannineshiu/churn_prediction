@@ -388,6 +388,8 @@ def predict(n_clicks, *values):
     return content, card_style, gauge
 
 
+server = app.server  # expose for gunicorn
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

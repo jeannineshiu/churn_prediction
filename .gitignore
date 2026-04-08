@@ -22,9 +22,15 @@ catboost_info/
 # Inference output
 inference_results.png
 
+# Raw data in root (kept in data/ folder instead)
+WA_Fn-UseC_-Telco-Customer-Churn.csv
+
 # macOS
 .DS_Store
 
 # IDE
 .vscode/
 .idea/
+
+# Docker
+.dockerignore
