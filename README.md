@@ -97,17 +97,29 @@ Raw CSV
 
 ## Quickstart
 
-### 1. Install dependencies
+### 1. Clone the repository
 
 ```bash
-conda activate ml-systems
-pip install catboost optuna scikit-learn pyyaml matplotlib seaborn
+git clone https://github.com/jeannineshiu/churn_prediction.git
+cd churn_prediction
 ```
 
-### 2. Train the model
+### 2. Create and activate the conda environment
 
 ```bash
-cd "System 2 - churn_prediction"
+conda create -n churn-prediction python=3.10 -y
+conda activate churn-prediction
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Train the model
+
+```bash
 python app-ml/entrypoint/train.py
 ```
 
@@ -116,7 +128,7 @@ This will:
 - Train the final model on the full training set
 - Save the model to `models/prod/latest_model.cbm`
 
-### 3. Run inference
+### 5. Run inference
 
 ```bash
 python app-ml/entrypoint/inference.py
