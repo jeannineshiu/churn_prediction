@@ -95,6 +95,36 @@ Raw CSV
 
 ---
 
+## Demo UI
+
+An interactive Dash app for demoing the system — input any customer profile and get an instant churn prediction with probability.
+
+### Churn Risk Prediction
+![Churn Risk](images/prediction_risk.png)
+
+### Safe Prediction (Likely to Stay)
+![Safe Prediction](images/prediction_safe.png)
+
+### Model Overview
+![Model Overview](images/model_overview.png)
+
+### Launch the app
+
+```bash
+pip install -r app-ui/requirements.txt
+python app-ui/app.py
+```
+
+Open `http://localhost:8050` in your browser.
+
+| Feature | Description |
+|---|---|
+| 🎲 Random Customer | Load a real customer from the test set with their true churn label |
+| 🔮 Predict | Run inference and display churn probability + color-coded result |
+| Model Overview tab | Confusion matrix, ROC curve, feature importance |
+
+---
+
 ## Quickstart
 
 ### 1. Clone the repository
